@@ -39,24 +39,23 @@ while IFS=';' read -r username groups || [[ -n "$username" ]]; do
 
     # Check if the user already exists
     if id "$username" &>/dev/null; then
-        log_message "User $username already exists. Skipping."
-        continue
+        log_message "User $username already exists. Updating groups."
+    else
+        # Create the user with a home directory
+        useradd -m "$username"
+        log_message "Created user: $username"
+
+        # Create a personal group for the user
+        groupadd "$username"
+        usermod -g "$username" "$username"
+        log_message "Created personal group for $username"
+
+        # Generate a random password
+        password=$(openssl rand -base64 12)
+        echo "$username:$password" | chpasswd
+        echo "$username,$password" >> $PASSWORD_FILE
+        log_message "Set password for $username"
     fi
-
-    # Create the user with a home directory
-    useradd -m "$username"
-    log_message "Created user: $username"
-
-    # Create a personal group for the user
-    groupadd "$username"
-    usermod -g "$username" "$username"
-    log_message "Created personal group for $username"
-
-    # Generate a random password
-    password=$(openssl rand -base64 12)
-    echo "$username:$password" | chpasswd
-    echo "$username,$password" >> $PASSWORD_FILE
-    log_message "Set password for $username"
 
     # Add user to additional groups
     IFS=',' read -ra group_array <<< "$groups"

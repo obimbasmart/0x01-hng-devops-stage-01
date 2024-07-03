@@ -1,4 +1,4 @@
-# DevOps Stage 1: Linux User Creation Bash Script
+# Linux User Creation Bash Script
 
 ## Challenge
 Your company has employed many new developers. As a SysOps engineer, write a bash script called create_users.sh that reads a text file containing the employee’s usernames and group names, where each line is formatted as user;groups.
